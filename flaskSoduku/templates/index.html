@@ -1,0 +1,21 @@
+<script type="text/javascript" src="static/index.js"></script>
+{% extends "layout.html" %}
+
+{% block body %}
+    <form method="post" id="sodukuTable" action="/" > 
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <div class="container">    
+          <div class="row align-items-center selector">
+            <div class="col">
+              <button class="btn mine"  type="submit" name="4"><img src="static/Soduku2.png"></button>
+              <br>
+              <text class="label">9x9 Sodoku</text>
+            </div>
+          <div class="col">
+            <button class="btn mine"  type="submit" name="9"><img src="static/Soduku9.png"></button>
+            <br>
+            <text class="label">4x4 Sodoku</text>
+          </div>
+        </div>
+    </form>
+{% endblock %}
