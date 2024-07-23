@@ -1,4 +1,6 @@
-### AC3 function does not properly work with if not statement. AC3 needs to be revised.
+
+### Difficulty can be assessed by the average number of possible solutions for each block 
+
 
 
 import os
@@ -62,8 +64,7 @@ sides4 = [1]
 sides9 = [2, 5]
 FourBox = None
 def horizontalConsistency(assignment):
-    print(len(assignment.values()))
-    print(assignment)
+    
     for j in range(int(math.sqrt(len(assignment.values())))):
         list = []
         for i in range(int(math.sqrt(len(assignment.values())))):
@@ -236,7 +237,47 @@ class sodukuCreator():
         else:
             return True
             
+    def boxCheck2(self, var, assignment, domains):
+        l = 0
+        list = []
+        revised = True
+        for key in self.soduku.box.keys():
+            if var in self.soduku.box[key]:
+                l = key
+                break
 
+        for slot in self.soduku.box[l]:
+            if slot in assignment.keys():
+                list.append(assignment[slot])
+                if assignment[slot] in domains[var]:
+                    domains[var].remove(assignment[slot])
+
+        return
+
+    def verticalCheck2(self, var, assignment, domains):
+        i, j = var
+        list = []
+        revised = True
+        # For value in column if value is equal to another value in the column return False
+        for s in range(self.soduku.type):
+            if (i, s) in assignment.keys():
+                list.append(assignment[i,s])
+                if assignment[i,s] in domains[var]:
+                    domains[var].remove(assignment[i, s])
+        return
+
+    def horizontalCheck2(self, var, assignment, domains):
+        i, j = var
+        list = []
+        revised = True
+        # For value in row if value is equal to another value in the column return False
+        for s in range(self.soduku.type):
+            if (s, j) in assignment.keys():
+                list.append(assignment[s, j])
+                if assignment[s, j] in domains[var]:
+                    domains[var].remove(assignment[s, j])
+        
+        return 
     
     def consistency(self, assignment, var):
         if self.verticalConsistency(assignment, var) and self.horizontalConsistency(assignment, var) and self.boxConsistency(assignment, var):
@@ -289,6 +330,7 @@ class sodukuCreator():
 
 
     def revise(self, var, assignment):
+        
         if self.verticalCheck(var, assignment) and self.horizontalCheck(var, assignment) and self.boxCheck(var, assignment):
             return True
         else:
@@ -319,12 +361,12 @@ class sodukuCreator():
         return False
 
     def backtrack(self, assignment):
-        if self.assignment_complete(assignment):
-            self.printAssignment(assignment)
+        if self.assignment_complete(assignment):    
             for var in self.soduku.variables:
-                print(var)
                 if not self.consistency(assignment, var):
-                    raise ValueError
+                    self.printAssignment(assignment)
+                    print("ValueError")
+                    
             return assignment
         var = self.random_var(assignment)
         list = self.domains[var]
@@ -349,6 +391,35 @@ class sodukuCreator():
     def solve(self):
         return self.backtrack(dict())
 
+    def difficulty(self, board):
+        numbers = []
+
+        domains = {}
+        for var in self.soduku.variables:
+            domains[var] = []
+            for num in range(1, self.soduku.height):
+                domains[var].append(num)
+                random.shuffle(self.domains[var])
+
+        def eliminate(assignment, var):
+            self.verticalCheck2(var, assignment, domains) 
+            self.horizontalCheck2(var, assignment, domains)
+            self.boxCheck2(var, assignment, domains)
+            
+
+        
+        for var in domains.keys():
+            if var not in board.keys():
+                eliminate(board, var)
+                numbers.append(len(domains[var]))
+
+        difficulty = sum(numbers)/len(numbers)
+        return difficulty
+                    
+    
+                
+        
+
     def unsolve(self, complete):
         use = complete.copy()
         for box in range(1, self.soduku.boxNum):
@@ -362,8 +433,6 @@ class sodukuCreator():
 
 
 
-today = sodukuCreator(soduku(4))
-playerboard = today.incomplete
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -372,9 +441,12 @@ def index():
     else:
         if "4" in request.form:
             primary = sodukuCreator(soduku(4))
+            print(primary.difficulty(primary.incomplete))
             return render_template("sodukuPage.html", playerBoard = primary.incomplete, cols=range(4), rows=range(4), vertical=vertical4, sides=sides4, max=4)
         else: 
             primary = sodukuCreator(soduku(9))
+            print(primary.difficulty(primary.incomplete))
+
             return render_template("sodukuPage.html", playerBoard = primary.incomplete, cols=range(9), rows=range(9), vertical=vertical9, sides=sides9, max=9)
 
 @app.route("/login", methods=["GET", "POST"])

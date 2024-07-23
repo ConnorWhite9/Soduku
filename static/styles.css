@@ -207,3 +207,43 @@ td{
 .modal-body {
     font-weight: 400;
 }
+
+@media only screen and (max-width: 1000px) {
+    .numberSlot {
+        width: 10vw;
+        background-color: rgb(20,20,20);
+        border: none;
+        text-align: center;
+        border-radius: 0px;
+        color: white;
+    }
+
+    .label {
+        text-align: center;
+    }
+
+    .col {
+        margin-bottom: 5vw;
+        border-color: rgb(96, 96, 96);
+        border-width: 1px;
+    }
+    
+
+    .title {
+        font-size: 5vw;
+    }
+
+    .sodukuBtn {
+        width: 40vw;
+        font-size: 5vw;
+    }
+
+    img {
+        width: 80vw;
+        height: 90vw;
+    }
+
+    .selector {
+        margin-top: 3vh;
+    }
+}
